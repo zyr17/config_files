@@ -127,6 +127,3 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/log4cxx/lib
 export CPLUS_INCLUDE_PATH=$CPP_INCLUDE_PATH:/usr/local/log4cxx/include
 
 export neovimPath=/usr/bin/nvim
-
-
-workon cityflow
