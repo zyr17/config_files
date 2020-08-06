@@ -92,6 +92,7 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 alias 7za='7z a -m0=lzma2'
+alias gunzipall='gunzip *.gz'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
