@@ -6,14 +6,20 @@ for file in `ls -a`; do
     if [[ $file != '.' && $file != '..' && $file != '.git' && ${file:0:1} == '.' ]]; then
         if [[ -e $file ]]; then
             while :; do
-                echo $file 'exists! input `r` to replace or `s` to skip'
+                echo $file 'exists! input `r` to replace , `d` to show diff, or `s` to skip'
                 read
                 if [[ $REPLY == 'r' ]]; then
                     rm -rf $file
                     break
                 else
-                    if [[ $REPLY == 's' ]]; then
-                        break
+                    if [[ $REPLY == 'd' ]]; then
+                        echo diff start
+                        diff $file $myConfigFolder$file
+                        echo diff end
+                    else
+                        if [[ $REPLY == 's' ]]; then
+                            break
+                        fi
                     fi
                 fi
             done
