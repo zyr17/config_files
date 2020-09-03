@@ -18,6 +18,7 @@ shopt -s histappend
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=50000
 HISTFILESIZE=100000
+#PROMPT_COMMAND="history -a;history -c;history -r; $PROMPT_COMMAND"
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -93,6 +94,10 @@ alias la='ls -A'
 alias l='ls -CF'
 alias 7za='7z a -m0=lzma2'
 alias gunzipall='gunzip *.gz'
+function GPU_process(){
+    GPU_PROCESS_PID=`nvidia-smi | grep -P '^\|    \d    ' | awk '{print "\\W"$3"\\W"}' | tr '\n' '|' | sed s'/.$//'`
+    ps aux | grep -P `nvidia-smi | grep -P '^\|    \d    ' | awk '{print "\\W"$3"\\W"}' | tr '\n' '|' | sed s'/.$//'`
+}
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
