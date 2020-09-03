@@ -98,6 +98,10 @@ function GPU_process(){
     GPU_PROCESS_PID=`nvidia-smi | grep -P '^\|    \d    ' | awk '{print "\\W"$3"\\W"}' | tr '\n' '|' | sed s'/.$//'`
     ps aux | grep -P `nvidia-smi | grep -P '^\|    \d    ' | awk '{print "\\W"$3"\\W"}' | tr '\n' '|' | sed s'/.$//'`
 }
+alias gita='git add .'
+alias gitc='git commit -m'
+alias gitp='git push'
+alias gits='git status'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
