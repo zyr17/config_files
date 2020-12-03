@@ -117,7 +117,7 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
           % (color('%6s' % ('%.1f%%' % (cpu_main['mem_use'] / cpu_main['mem_all'])), '85%'),
              cpu_main['mem_all']
     ))
-    row -= 2
+    row -= 3
     for i in range(len(gpu_data)):
         print('=' * column)
         gd = gpu_data[i]
