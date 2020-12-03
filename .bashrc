@@ -106,6 +106,11 @@ if [ -f ~/.bash.d/bash_aliases ]; then
     . ~/.bash.d/bash_aliases
 fi
 
+# for every script file in .bash.d/scripts, make an alias to run the sctipt
+for i in `ls ~/.bash.d/scripts`; do
+    alias $i="~/.bash.d/scripts/${i}"
+done
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
