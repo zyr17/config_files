@@ -3,6 +3,7 @@
 import os
 import sys
 import re
+import time
 
 def collect_gpu_data():
     smi_data = os.popen('nvidia-smi').readlines()
@@ -92,6 +93,7 @@ def collect_cpu_data():
     return main, threads, cpu_pids
 
 def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
+    os.system('clear')
     column = os.get_terminal_size().columns
     if column < 50:
         column = 50
@@ -115,17 +117,6 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
           % (color('%6s' % ('%.1f%%' % (cpu_main['mem_use'] / cpu_main['mem_all'])), '85%'),
              cpu_main['mem_all']
     ))
-    print('-' * column)
-    print('%-8s%-8s%-7s%-6s%s' % ('PID', 'user', 'CPU', 'Mem', 'command'))
-    for pid in cpu_pid:
-        data = cpu_threads[pid]
-        print('%-8d%-8s%s%s%s'
-              % (pid,
-                 data['user'],
-                 color('%-7s' % (r'%.1f%%' % data['cpu']), '100%'),
-                 color('%-6s' % ('%.1f%%' % data['mem']), '10%'),
-                 data['cmd'][:column * show_all - 29]
-        ))
     for i in range(len(gpu_data)):
         print('=' * column)
         gd = gpu_data[i]
@@ -144,14 +135,36 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
             print('%-8s%-8s%-7s%-6s%-8s%s' % ('PID', 'user', 'CPU', 'Mem', 'GPU-Mem', 'command'))
         for pid, gmem in cleaned_pid:
             data = cpu_threads[pid]
-            print('%-8d%-8s%-7s%-6s%-8s%s'
+            print('%-8d%-s%-7s%-6s%-8s%s'
                   % (pid,
-                     data['user'],
+                     '\033[1m%-8s\033[0m' % data['user'],
                      color('%-7s' % (r'%.1f%%' % data['cpu']), '100%'),
                      color('%-6s' % ('%.1f%%' % data['mem']), '10%'),
                      gmem,
                      data['cmd'][:column * show_all - 37]
             ))
+    # CPU and MEM 
+    print('=' * column)
+    print('%-8s%-8s%-7s%-6s%s' % ('PID', 'user', 'CPU', 'Mem', 'command'))
+    for pid in cpu_pid:
+        data = cpu_threads[pid]
+        print('%-8d%-8s%s%s%s'
+              % (pid,
+                 '\033[1m%-8s\033[0m' % data['user'],
+                 color('%-7s' % (r'%.1f%%' % data['cpu']), '100%'),
+                 color('%-6s' % ('%.1f%%' % data['mem']), '10%'),
+                 data['cmd'][:column * show_all - 29]
+        ))
 
 if __name__ == '__main__':
-    list_gpu_info(*collect_gpu_data(), *collect_cpu_data())
+    interval = 5
+    os.system('clear')
+    print('loading information...')
+    for arg in sys.argv:
+        if re.match('-t\d+', arg):
+            interval = int(arg[2:])
+    while True:
+        start_time = time.time()
+        list_gpu_info(*collect_gpu_data(), *collect_cpu_data())
+        end_time = time.time()
+        time.sleep(max(0, interval - (end_time - start_time)))
