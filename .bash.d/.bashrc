@@ -130,3 +130,6 @@ if [[ -e $VENVWRAPPER_PATH ]]; then
 fi
 
 export neovimPath=/usr/bin/nvim
+
+
+workon cityflow

@@ -14,7 +14,7 @@ for file in `ls -a`; do
                 else
                     if [[ $REPLY == 'd' ]]; then
                         echo diff start
-                        diff $file $myConfigFolder$file
+                        diff $file $myConfigFolder$file -r
                         echo diff end
                     else
                         if [[ $REPLY == 's' ]]; then
@@ -26,6 +26,7 @@ for file in `ls -a`; do
         fi
         if [[ ! -e $file ]]; then
             ln -s $myConfigFolder$file .
+            echo soft link for $file
         fi
     fi
 done
