@@ -54,7 +54,7 @@ def color(inp, com):
         return "\033[1;31m%s\033[0m" % str(inp)
     return str(inp)
 def collect_cpu_data():
-    top_data = os.popen('top -b -d 1 -n 2').readlines()
+    top_data = os.popen('top -b -w 512 -d 1 -n 2').readlines()
     top_data = top_data[1:]
     while top_data[0][:3] != 'top':
         top_data = top_data[1:]
@@ -95,8 +95,8 @@ def collect_cpu_data():
 def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
     column = os.get_terminal_size().columns
     row = os.get_terminal_size().lines
-    if column < 50:
-        column = 50
+    if column < 51:
+        column = 51
     show_all = ('-a' in sys.argv) * 10000 + 1
     cputemp = []
     try:
@@ -121,11 +121,12 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
     for i in range(len(gpu_data)):
         print('=' * column)
         gd = gpu_data[i]
-        print('GPU #%d, Temp: %3s, Mem: %s, TotalMem: %8s' 
+        print('GPU %d, Temp:%3s, Util:%s, Mem:%s, TotMem:%6s' 
               % (i, 
                  color(gd['temp'], 78), 
-                 color('%6s' % ('%.1f%%' % (cpu_main['mem_use'] / cpu_main['mem_all'])), '85%'),
-                 gd['mem_all']
+                 color('%3d%%' % (gd['utility']), '60%'),
+                 color('%4s' % ('%.0f%%' % (cpu_main['mem_use'] / cpu_main['mem_all'])), '85%'),
+                 gd['mem_all'][:-2]
         ))
         row -= 2
         cleaned_pid = []
