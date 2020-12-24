@@ -125,7 +125,7 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
               % (i, 
                  color(gd['temp'], 78), 
                  color('%3d%%' % (gd['utility']), '60%'),
-                 color('%4s' % ('%.0f%%' % (cpu_main['mem_use'] / cpu_main['mem_all'])), '85%'),
+                 color('%4s' % ('%.0f%%' % (float(gd['mem_use'][:-3]) / float(gd['mem_all'][:-3]) * 100)), '85%'),
                  gd['mem_all'][:-2]
         ))
         row -= 2
