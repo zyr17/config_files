@@ -124,7 +124,7 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
         gd = gpu_data[i]
         print('GPU %d, Temp:%s, Util:%s, Mem:%s, TotMem:%6s' 
               % (i, 
-                 color('%3d%%' % gd['temp'], '78%')[:-1], 
+                 color('%3d%%' % gd['temp'], '78%').replace('%', ''), 
                  color('%3d%%' % gd['utility'], '60%'),
                  color('%4s' % ('%.0f%%' % (float(gd['mem_use'][:-3]) / float(gd['mem_all'][:-3]) * 100)), '85%'),
                  gd['mem_all'][:-2]
