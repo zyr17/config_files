@@ -9,7 +9,7 @@ def collect_gpu_data():
     smi_data = os.popen('nvidia-smi').readlines()
     gpu_data = []
     gpu_pid = []
-    if 'failed' in smi_data[0]:
+    if 'failed' in smi_data[0] or 'Failed' in smi_data[0]:
         print('[ERROR] NVIDIA-SMI failed to run')
         return [], []
 
