@@ -126,12 +126,8 @@ fi
 VENVWRAPPER_PATH=~/.local/bin/virtualenvwrapper.sh
 if [[ -e $VENVWRAPPER_PATH ]]; then
   export WORKON_HOME=~/environment   #设置virtualenv的统一管理目录
-  export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'   #添加virtualenvwrapper的参数，生成干净隔绝的环境
   export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python     #指定python解释器
   source $VENVWRAPPER_PATH #执行virtualenvwrapper安装脚本
-
-  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/log4cxx/lib
-  export CPLUS_INCLUDE_PATH=$CPP_INCLUDE_PATH:/usr/local/log4cxx/include
 fi
 
 export neovimPath=/usr/bin/nvim
