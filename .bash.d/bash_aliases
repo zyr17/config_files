@@ -2,8 +2,8 @@
 alias 7za='7z a -m0=lzma2'
 alias gunzipall='gunzip *.gz'
 function GPU_process(){
-    GPU_PROCESS_PID=`nvidia-smi | grep -P '^\|    \d    ' | awk '{print "\\W"$3"\\W"}' | tr '\n' '|' | sed s'/.$//'`
-    ps aux | grep -P `nvidia-smi | grep -P '^\|    \d    ' | awk '{print "\\W"$3"\\W"}' | tr '\n' '|' | sed s'/.$//'`
+    GPU_PROCESS_PID=`nvidia-smi | grep -P '^\|    \d   ' | awk '{print "\\W"$3"\\W|\\W"$5"\\W"}' | tr '\n' '|' | sed s'/.$//'`
+    ps aux | grep -P `nvidia-smi | grep -P '^\|    \d   ' | awk '{print "\\W"$3"\\W|\\W"$5"\\W"}' | tr '\n' '|' | sed s'/.$//'`
 }
 alias gita='git add .'
 alias gitc='git commit -m'
