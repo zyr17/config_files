@@ -68,7 +68,7 @@ def color(inp, com):
     if type(inp) == type(1.0):
         inp = '%.1f' % inp
     if makecolor:
-        return "\033[1;31m%s\033[0m" % str(inp)
+        return "\033[7;31m%s\033[0m" % str(inp)
     return str(inp)
 
 def collect_cpu_data():
