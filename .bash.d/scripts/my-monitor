@@ -107,9 +107,15 @@ def collect_cpu_data():
             'cmd': cmd,
             'user': user
         }
-        if cpu > 99.9 or mem > 2:
+        if cpu > 95 or mem > 2:
             cpu_pids.append(pid)
     return main, threads, cpu_pids
+
+UID_CACHE = {}
+def is_user_uid(username):
+    if username not in UID_CACHE:
+        UID_CACHE[username] = int(os.popen('id -u "' + username + '"').read())
+    return UID_CACHE[username] > 1000000000
 
 def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
     column = os.get_terminal_size().columns
@@ -151,7 +157,7 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
         row -= 2
         cleaned_pid = []
         for pid in gpu_pid[i]:
-            if cpu_threads[pid[0]]['user'] != 'root':
+            if is_user_uid(cpu_threads[pid[0]]['user']):
                 cleaned_pid.append(pid)
         if len(cleaned_pid) > 0:
             print('-' * column)
@@ -178,6 +184,8 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
         if row == 0:
             break
         data = cpu_threads[pid]
+        # if not is_user_id(data['user']):
+        #    continue
         print('%-8d%-8s%s%s%s'
               % (pid,
                  '\033[1m%-8s\033[0m' % data['user'],
