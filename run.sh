@@ -3,7 +3,7 @@ myConfigFolder=`pwd`/
 targetFolder=~
 for file in `ls -a`; do
     cd $targetFolder
-    if [[ $file != '.' && $file != '..' && $file != '.git' && ${file:0:1} == '.' ]]; then
+    if [[ $file != '.' && $file != '..' && $file != '.git' && $file != '.gitignore' && ${file:0:1} == '.' ]]; then
         if [[ -e $file ]]; then
             while :; do
                 echo $file 'exists! input `r` to replace , `d` to show diff, or `s` to skip'

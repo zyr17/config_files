@@ -38,3 +38,25 @@ if has("autocmd")
 endif 
 
 set autoread
+
+"custom key bindings for vim-tmux-navigator
+execute "set <M-h>=\eh"
+execute "set <M-j>=\ej"
+execute "set <M-j>=\ek"
+execute "set <M-l>=\el"
+let g:tmux_navigator_no_mappings = 1
+nnoremap <silent> <M-h> :TmuxNavigateLeft<cr>
+nnoremap <silent> <M-j> :TmuxNavigateDown<cr>
+nnoremap <silent> <M-k> :TmuxNavigateUp<cr>
+nnoremap <silent> <M-l> :TmuxNavigateRight<cr>
+"nnoremap <silent> {Previous-Mapping} :TmuxNavigatePrevious<cr>
+
+"distinguish M-j and ESC j to avoid mistype accent alphabets
+"https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim/10216459#10216459
+let c='a'
+while c <= 'z'
+  exec "set <A-".c.">=\e".c
+  exec "imap \e".c." <A-".c.">"
+  let c = nr2char(1+char2nr(c))
+endw
+set ttimeout ttimeoutlen=20

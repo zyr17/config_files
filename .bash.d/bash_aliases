@@ -10,3 +10,5 @@ alias gitc='git commit -m'
 alias gitp='git push'
 alias gits='git status'
 alias ..='cd ..'
+
+alias tmux='TERM=xterm-256color tmux'

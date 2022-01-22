@@ -131,3 +131,13 @@ if [[ -e $VENVWRAPPER_PATH ]]; then
 fi
 
 export neovimPath=/usr/bin/nvim
+
+# use 256color. https://gist.github.com/padthaitofuhot/2bcd6c82de7d7783a1dc
+case "$BASH_EXECUTION_STRING" in
+
+        *ctris*) TERM=xterm;;
+    *ninvaders*) TERM=xterm;;
+              *) TERM=xterm-256color;;
+esac
+
+export TERM
