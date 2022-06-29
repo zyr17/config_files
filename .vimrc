@@ -50,8 +50,12 @@ nnoremap <silent> <M-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <M-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <M-l> :TmuxNavigateRight<cr>
 "nnoremap <silent> {Previous-Mapping} :TmuxNavigatePrevious<cr>
+"Write all buffers before navigating from Vim to tmux pane
+let g:tmux_navigator_save_on_switch = 2
+"Disable tmux navigator when zooming the Vim pane
+let g:tmux_navigator_disable_when_zoomed = 1
 
-"distinguish M-j and ESC j to avoid mistype accent alphabets
+"distinguish M-j and ESC j to avoid mistype accent alphabets èêëì
 "https://stackoverflow.com/questions/6778961/alt-key-shortcuts-not-working-on-gnome-terminal-with-vim/10216459#10216459
 let c='a'
 while c <= 'z'

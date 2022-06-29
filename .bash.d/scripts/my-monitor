@@ -75,6 +75,11 @@ def color(inp, com):
         return "\033[7;31m%s\033[0m" % str(inp)
     return str(inp)
 
+def bold(s):
+    if use_color:
+        return '\033[1m%s\033[0m' % s
+    return s
+
 def collect_cpu_data():
     top_data = os.popen('top -b -w 512 -d 1 -n 2').readlines()
     top_data = top_data[1:]
@@ -121,12 +126,11 @@ def is_user_uid(username):
         UID_CACHE[username] = int(os.popen('id -u "' + username + '"').read())
     return UID_CACHE[username] > 1000000000
 
-def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
-    column = 0
-    row = 999
+def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid,
+                  column = 0, row = 999):
     try:
         column = os.get_terminal_size().columns
-        row = os.get_terminal_size().lines
+        row = os.get_terminal_size().lines - 1
     except:
         pass
     if column < 51:
@@ -176,7 +180,7 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
             data = cpu_threads[pid]
             print('%-8d%-s%-7s%-6s%-8s%s'
                   % (pid,
-                     '\033[1m%-8s\033[0m' % data['user'],
+                     bold('%-8s' % data['user']),
                      color('%-7s' % (r'%.1f%%' % data['cpu']), '100%'),
                      color('%-6s' % ('%.1f%%' % data['mem']), '10%'),
                      gmem,
@@ -197,7 +201,7 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
         #    continue
         print('%-8d%-8s%s%s%s'
               % (pid,
-                 '\033[1m%-8s\033[0m' % data['user'],
+                 bold('%-8s' % data['user']),
                  color('%-7s' % (r'%.1f%%' % data['cpu']), '100%'),
                  color('%-6s' % ('%.1f%%' % data['mem']), '10%'),
                  data['cmd'][:column * show_all - 29]
@@ -206,22 +210,25 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid):
 
 if __name__ == '__main__':
     interval = 5
-    os.system('clear')
-    print('loading information...')
     single_time = False
+    column = 0
     for arg in sys.argv:
         if re.match('-t\d+', arg):
             interval = int(arg[2:])
         if arg == '-1':
             single_time = True
             use_color = False
+            column = 79
     try:
+        if not single_time:
+            os.system('clear')
+            print('loading information...')
         while True:
             start_time = time.time()
             cpu_data = collect_cpu_data()
             os.system('clear')
             gpu_data = collect_gpu_data()
-            list_gpu_info(*gpu_data, *cpu_data)
+            list_gpu_info(*gpu_data, *cpu_data, column)
             end_time = time.time()
             if single_time:
                 break
