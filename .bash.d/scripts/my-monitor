@@ -24,7 +24,7 @@ def collect_gpu_data():
             break
         gid = int(line1[1:5].strip())
         assert gid == len(gpu_data)
-        temp = int(line2[5:10].strip())
+        temp = int(line2[6:10].strip())
         mem_use, mem_all = [x.strip() for x in line2.split('|')[2].split('/')]
         utility = int(line2.split('|')[3].split('%')[0].strip())
         gpu_data.append({
