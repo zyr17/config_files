@@ -14,7 +14,7 @@ for file in `ls -a`; do
                 else
                     if [[ $REPLY == 'd' ]]; then
                         echo diff start
-                        diff $file $myConfigFolder$file -r
+                        diff $file $myConfigFolder$file -r -u
                         echo diff end
                     else
                         if [[ $REPLY == 's' ]]; then
