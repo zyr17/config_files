@@ -4,12 +4,133 @@ import os
 import sys
 import re
 import time
+import csv
 
 use_color = True
 
 DEBUG = False  # if true, save loaded nvidia-smi and top in current folder
 
+
+# run the command in os and get the output
+def run_cmd(cmd):
+    return os.popen(cmd)
+
+
+def parse_csv_buffer_to_dict(buffer):
+    import csv
+    data = []
+    with buffer as csvfile:
+        reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        for row in reader:
+            data.append(row)
+
+    title = data[0]
+    data = data[1:]
+    res = {}
+    for i, key in enumerate(title):
+        one = {}
+        for j, line in enumerate(data):
+            value = line[i]
+            try:
+                value = int(value.strip())
+            except:
+                pass
+            one[j] = value
+        res[key] = one
+    return res
+
+
+# parse csv buffer to a dict with pandas
+def parse_csv_buffer_to_dict_with_pandas(buffer):
+
+    import pandas as pd
+    return pd.read_csv(buffer).to_dict()
+
+
+def get_gpu_and_app_info():
+    query_gpu_cmd = ('nvidia-smi ' 
+                     '--query-gpu=uuid,temperature.gpu,memory.total,memory.used,utilization.gpu,index  ' 
+                     '--format=csv')
+    gpu_info_buffer = run_cmd(query_gpu_cmd)
+    gpu_info_dict = parse_csv_buffer_to_dict(gpu_info_buffer)
+    # print(gpu_info_dict)
+
+    query_app_cmd = 'nvidia-smi ' \
+                    '--query-compute-apps=pid,gpu_uuid,used_memory ' \
+                    '--format=csv'
+    app_info_buffer = run_cmd(query_app_cmd)
+    app_info_dict = parse_csv_buffer_to_dict(app_info_buffer)
+    # print(app_info_dict)
+
+    result_dict = dict()
+
+    # gpu info
+    gpu_numbers = 0
+    for key in gpu_info_dict.keys():
+        gpu_numbers = len(gpu_info_dict[key])
+        break
+
+    gpu_uuid_to_index = dict()
+
+    gpu_info_dict_index_key = dict()
+    for i in range(gpu_numbers):
+        gpu_info_dict_reorg = dict()
+        for key in gpu_info_dict.keys():
+            real_key = key.strip().split()[0]
+            real_value = gpu_info_dict[key][i]
+            if isinstance(real_value, str):
+                real_value = real_value.strip().split()[0]
+                if real_value.isnumeric():
+                    real_value = int(real_value)
+            gpu_info_dict_reorg[real_key] = real_value
+        gpu_uuid_to_index[gpu_info_dict_reorg['uuid']] = gpu_info_dict_reorg['index']
+        gpu_info_dict_index_key[gpu_info_dict_reorg['index']] = gpu_info_dict_reorg
+    result_dict['gpu_info'] = gpu_info_dict_index_key
+
+    # app info
+    app_numbers = 0
+    for key in app_info_dict.keys():
+        app_numbers = len(app_info_dict[key])
+        break
+
+    app_info_dict_index_key = dict()
+    for i in range(app_numbers):
+        app_info_dict_reorg = dict()
+        for key in app_info_dict.keys():
+            real_key = key.strip().split()[0]
+            real_value = app_info_dict[key][i]
+            if isinstance(real_value, str):
+                real_value = real_value.strip().split()[0]
+                if real_value.isnumeric():
+                    real_value = int(real_value)
+            app_info_dict_reorg[real_key] = real_value
+        app_info_dict_reorg['gpu_index'] = gpu_uuid_to_index[app_info_dict_reorg['gpu_uuid']]
+        app_info_dict_index_key[i] = app_info_dict_reorg
+    result_dict['app_info'] = app_info_dict_index_key
+
+    return result_dict
+
+
 def collect_gpu_data():
+    result_dict = get_gpu_and_app_info()
+    gpu_data = [None] * len(result_dict['gpu_info'])
+    for idx, value in result_dict['gpu_info'].items():
+        gpu_data[idx] = {
+            'temp': value['temperature.gpu'],
+            'mem_use': f"{value['memory.used']}MiB",
+            'mem_all': f"{value['memory.total']}MiB",
+            'utility': value['utilization.gpu'],
+        }
+    gpu_pid = [[] for x in range(len(result_dict['gpu_info']))]
+    for idx, value in result_dict['app_info'].items():
+        gpuid = value['gpu_index']
+        pid = value['pid']
+        mem = f"{value['used_gpu_memory']}MiB"
+        gpu_pid[gpuid].append([pid, mem])
+    return gpu_data, gpu_pid
+
+
+def collect_gpu_data_old():
     smi_data = os.popen('nvidia-smi').readlines()
     if DEBUG:
         open('gpu.txt', 'w').write('\n'.join(smi_data))
@@ -239,6 +360,10 @@ if __name__ == '__main__':
             cpu_data = collect_cpu_data()
             os.system('clear')
             gpu_data = collect_gpu_data()
+            # gpu_data_2 = collect_gpu_data_old()
+            # print(gpu_data)
+            # print(gpu_data_2)
+            # exit(0)
             list_gpu_info(*gpu_data, *cpu_data, column)
             end_time = time.time()
             if single_time:
