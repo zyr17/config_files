@@ -12,7 +12,9 @@ DEBUG = False  # if true, save loaded nvidia-smi and top in current folder
 
 
 # run the command in os and get the output
-def run_cmd(cmd):
+def run_cmd(cmd, remove_error_msg = True):
+    if remove_error_msg:
+        cmd += ' 2>/dev/null'
     return os.popen(cmd)
 
 
@@ -24,6 +26,8 @@ def parse_csv_buffer_to_dict(buffer):
         for row in reader:
             data.append(row)
 
+    if len(data) == 0:  # nvidia-smi error, return None
+        return None
     title = data[0]
     data = data[1:]
     res = {}
@@ -61,6 +65,12 @@ def get_gpu_and_app_info():
     app_info_buffer = run_cmd(query_app_cmd)
     app_info_dict = parse_csv_buffer_to_dict(app_info_buffer)
     # print(app_info_dict)
+
+    if gpu_info_dict is None or app_info_dict is None:
+        return {
+            'gpu_info': {},
+            'app_info': {}
+        }
 
     result_dict = dict()
 
@@ -271,9 +281,10 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid,
     cputemp = []
     try:
         for line in os.popen('sensors').readlines():
-            if '+' in line:
+            if '°C' in line:
                 try:
                     cputemp.append(float(line[10:19]))
+                    # print(line, cputemp[-1])
                 except Exception:
                     pass
         cputemp = sum(cputemp) / len(cputemp)
