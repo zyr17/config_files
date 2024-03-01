@@ -321,13 +321,29 @@ def list_gpu_info(gpu_data, gpu_pid, cpu_main, cpu_threads, cpu_pid,
         row -= 2
         cleaned_pid = []
         for pid in gpu_pid[i]:
-            if is_user_uid(cpu_threads[pid[0]]['user']):
+            if (
+                pid[0] not in cpu_threads 
+                or is_user_uid(cpu_threads[pid[0]]['user'])
+            ):
                 cleaned_pid.append(pid)
         if len(cleaned_pid) > 0:
             print('-' * column)
             print('%-8s%-8s%-7s%-6s%-8s%s' % ('PID', 'user', 'CPU', 'Mem', 'GPU-Mem', 'command'))
             row -= 2
         for pid, gmem in cleaned_pid:
+            if pid not in cpu_threads:
+                cmd = 'Unknown PID!'
+                if use_color:
+                    cmd = "\033[7;31m%s\033[0m" % str(cmd)
+                print('%-8d%-s%-7s%-6s%-8s%s'
+                      % (pid,
+                         bold('%-8s' % '???'),
+                         '???%',
+                         '???%',
+                         gmem,
+                         cmd,
+                ))
+                continue
             data = cpu_threads[pid]
             print('%-8d%-s%-7s%-6s%-8s%s'
                   % (pid,
