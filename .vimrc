@@ -30,7 +30,7 @@ set history=1000
 set autoread
 set scrolloff=5
 
-set colorcolumn=80
+set colorcolumn=89
 hi ColorColumn ctermbg=lightgrey guibg=lightgrey
 
 if has("autocmd")                                                          
